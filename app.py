@@ -8,6 +8,7 @@ from cs50 import SQL
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 import json
+import subprocess
 
 from helpers import login_required
 
@@ -149,7 +150,17 @@ def crawl():
         except: # if error then return error msg
             return render_template("crawl.html", error = "Crawl type has not been chosen.")
 
-        return render_template("crawl.html", test = crawl_type)
+
+        # scrapy crawl photos -a start_url="https://unsplash.com/
+        if crawl_type == "photo":
+            spider_photo = "photos"
+            url = request.form.get("url")
+            cli_url = "start_url=" + url
+            subprocess.check_output(['scrapy', 'crawl', spider_photo, "-a", cli_url], cwd="web_scrapping")
+            return render_template("data_photo.html")
+
+        if crawl_type == "text":
+            return render_template("data_text.html")
     else:
         return render_template("crawl.html")
 
@@ -168,10 +179,8 @@ def data_photo():
     if request.method == "POST":
         return render_template('data_photo.html')
     else:
-        with open("web_scrapping/web_scrapping/spiders/photos_url.json") as photo_json:
-            json_text = json.load(photo_json)
-            photos = json_text[0]["image_urls"]
-            
+        # use os.listdir
+        photos = os.listdir('static/local_folder/full')
         return render_template('data_photo.html', photos=photos)
 
 if __name__ == "__main__":
