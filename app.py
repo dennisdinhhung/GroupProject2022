@@ -143,6 +143,9 @@ def crawl():
     #TODO: Redirect the user once the crawling is finished
 
     if request.method == "POST":
+        # url field empty
+        if not request.form.get("url"):
+            return render_template("crawl.html", error="Url field is empty")
 
         # try the function to see if if returns an error
         try:
