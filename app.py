@@ -167,6 +167,7 @@ def crawl():
     else:
         return render_template("crawl.html")
 
+
 @app.route('/data_text')
 @login_required
 def data_text():
